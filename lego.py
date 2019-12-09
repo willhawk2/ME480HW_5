@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[157]:
+# In[21]:
 
 
 
@@ -10,16 +10,18 @@ from solid.utils import *
 import viewscad
 
 r = viewscad.Renderer(openscad_exec='C:\Program Files\OpenSCAD\openscad.exe')
+ff = 1.095
+print(4.6*ff)
 
 
-# In[223]:
+# In[22]:
 
 
 def lego(M,N,h=7.8):
     '''M is the length and N is the width'''
-    D = 4.6
+    D = 4.6*ff
     S = 3.1 # spacing
-    es = 1.2 # extra space thickness
+    es = 1.2*ff # extra space thickness
     t = 7.4 # thickness
     cd = (S+D)
     L = cd*(M-1)
@@ -44,7 +46,7 @@ def lego(M,N,h=7.8):
         return W, final
 
 
-# In[224]:
+# In[23]:
 
 
 Longest,f = lego(1,5)
@@ -53,7 +55,7 @@ r.render(f)
 
 # Part B
 
-# In[225]:
+# In[5]:
 
 
 def NEMASTANDARDS(INPUT):
@@ -69,20 +71,20 @@ def NEMASTANDARDS(INPUT):
     return dimensions
 
 
-# In[226]:
+# In[8]:
 
 
 def NEMAMount(func,Standard):
     '''func pulls in the standard, Standard is the value of the NEMA standard is defined by NEMA designation '''
     d = NEMASTANDARDS(Standard)
     base = cube([d[0],d[0],d[3]*2])
-    hole = translate([d[0]/2,d[0]/2,0])(cylinder(d[2]/2,d[3]*3,segments=100))
-    hole2 = translate([d[0]/2,d[0]/2,0])(cylinder(d[5]/2,d[3],segments=100))
+    hole = translate([d[0]/2,d[0]/2,0])(cylinder(d[2]/2*ff,d[3]*3,segments=100))
+    hole2 = translate([d[0]/2,d[0]/2,0])(cylinder(d[5]/2*ff,d[3]*ff,segments=100))
     s = base-hole-hole2
     #base with hole till here
     sp = translate([(-d[0]+d[1])/2,(-d[0]+d[1])/2,0])(s)
     # Shifts object
-    mountingHole = cylinder(d[4]/2,d[3]*3,segments=100)
+    mountingHole = cylinder(d[4]/2*ff,d[3]*3,segments=100)
     s = sp-mountingHole
     sn1 = translate([d[1],0,0])(mountingHole)
     sn2 = translate([0,d[1],0])(mountingHole)
@@ -105,37 +107,43 @@ snew = NEMAMount(NEMASTANDARDS,'NEMA 17')
 
 # Part C
 
-# In[229]:
+# In[12]:
 
 
 def adaptor(func,Standard):
     '''func is the NEMA standard function and Standard is the NEMA standard to use for a look up'''
     d = NEMASTANDARDS(Standard)
     #index 7 is the shaft diameter and index 6 is the shaft length
-    c = cylinder(d[7],d[6]+d[7]/4,segments=500)
-    c2 = cylinder(d[7]/2,d[6],segments=500)
-    c1 = translate([0,0,d[6]+d[7]/4])(cylinder(4.6/2,7.8*1.5,segments=500))
+    c = cylinder(d[7]*ff,(d[6]+d[7]/4),segments=500)
+    c2 = cylinder(d[7]/2*ff,d[6],segments=500)
+    c1 = translate([0,0,d[6]+d[7]/4])(cylinder(4.6/2*ff,7.8*1.5,segments=500))
     s = c-c2+c1
     return s
 r.render(adaptor(NEMASTANDARDS,'NEMA 17'))
 
 
-# In[199]:
+# In[10]:
+
+
+c = (cylinder(4.6/2*ff,30,segments=500))
+r.render(c)
+
+
+# In[12]:
 
 
 # generate an scad file the generate to stl
 def exportScadFile(obj):
     import os
     cwd = os.getcwd()
-    print(cwd)
     output = scad_render(obj).strip().replace('\n','').replace("\t","")
     return output
 
 
-# In[230]:
+# In[ ]:
 
 
-exportScadFile(adaptor(NEMASTANDARDS,'NEMA 17'))
+
 
 
 # In[ ]:
